@@ -1,0 +1,318 @@
+#include<iostream>
+#include<cmath>
+
+using namespace std;
+
+/*
+    arr       : array to be sorted, in order to get points this array should contain be in sorted state before returning
+    size      : size of arr
+    ascending : true for ascending, false for descending
+
+    you can use ceil function from cmath
+
+*/
+void swap(int* a, int* b)
+{
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+
+/* This function takes last element as pivot, places
+the pivot element at its correct position in sorted
+array, and places all smaller (smaller than pivot)
+to left of pivot and all greater elements to right
+of pivot */
+int partition_asc (int *arr, int low, int high, bool ascending, int& count)
+{
+    int pivot = arr[high]; // pivot
+    int i = (low - 1); // Index of smaller element
+
+    for (int j = low; j <= high - 1; j++)
+    {
+        // If current element is smaller than the pivot
+        if (arr[j] < pivot)
+        {
+            i++; // increment index of smaller element
+            swap(&arr[i], &arr[j]);
+
+        }
+        count++;
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return (i + 1);
+}
+
+int partition_desc(int *arr, int low, int high, bool ascending, int& count)
+{
+    int pivot = arr[high]; // pivot
+    int i = (low - 1); // Index of smaller element
+
+    for (int j = low; j <= high - 1; j++)
+    {
+        // If current element is smaller than the pivot
+        if (arr[j] > pivot)
+        {
+            i++; // increment index of smaller element
+            swap(&arr[i], &arr[j]);
+
+        }
+        count++;
+    }
+    swap(&arr[i + 1], &arr[high]);
+    return (i + 1);
+}
+/* The main function that implements QuickSort
+arr[] --> Array to be sorted,
+low --> Starting index,
+high --> Ending index */
+int quickSort(int arr[], int low, int high, bool ascending, int &count)
+{
+    if (low < high)
+    {
+        /* pi is partitioning index, arr[p] is now
+        at right place */
+        if(ascending == true){
+          int pi = partition_asc(arr, low, high, ascending, count);
+          quickSort(arr, low, pi - 1, ascending, count);
+          quickSort(arr, pi + 1, high, ascending, count);
+        }
+        else{
+          int pi = partition_desc(arr, low, high, ascending, count);
+          quickSort(arr, low, pi - 1, ascending, count);
+          quickSort(arr, pi + 1, high, ascending, count);
+        }
+
+    }
+    return count;
+}
+
+/* Function to print an array */
+
+
+int QuickSort (int*& arr, int size, bool ascending)
+{
+    int low = 0;
+    int high = size-1;
+    int count = 0;
+    return quickSort(arr, low, high, ascending, count);
+
+}
+
+
+int quicksort3_asc(int a[], int low, int high, bool ascending, int& count)
+{
+    if(high <= low){
+      return 0;
+    }
+    int i = low;
+    int k = low;
+    int p = high;
+    while(i<p){
+      if(a[i] < a[high]){
+        swap(&a[i++], &a[k++]);
+        count++;
+      }
+      else if(a[i] == a[high]){
+        swap(&a[i], &a[--p]);
+        count++;
+        count++;
+      }
+      else{
+        i++;
+        count++;
+        count++;
+      }
+    }
+    int y;
+    int m = std::min(p-k, high-p+1);
+    for(int j = 0, y = m-1; j<=m-1, y>= 0; j++, y--){
+      swap(&a[k+j], &a[high-y]);
+    }
+    quicksort3_asc(a, low, k-1, ascending, count);
+    quicksort3_asc(a, high-p+k+1, high, ascending, count);
+    return count;
+}
+
+int quicksort3_desc(int a[], int low, int high, bool ascending, int& count)
+{
+    if(high <= low){
+      return 0;
+    }
+    int i = low;
+    int k = low;
+    int p = high;
+
+    while(i<p){
+      if(a[i] > a[high]){
+        swap(&a[i++], &a[k++]);
+        count++;
+      }
+      else if(a[i] == a[high]){
+        swap(&a[i], &a[--p]);
+        count++;
+        count++;
+      }
+      else{
+        i++;
+        count++;
+        count++;
+      }
+    }
+    int y;
+    int m = std::min(p-k, high-p+1);
+    for(int j = 0, y = m-1; j<=m-1, y>= 0; j++, y--){
+      swap(&a[k+j], &a[high-y]);
+    }
+    quicksort3_desc(a, low, k-1, ascending, count);
+    quicksort3_desc(a, high-p+k+1, high, ascending, count);
+    return count;
+}
+
+
+int QuickSort3 (int*& arr, int size, bool ascending)
+{
+    int count = 0;
+    if(size > 1){
+      if(ascending == true){
+        return quicksort3_asc(arr, 0, size-1, ascending, count);
+      }
+      else{
+        return quicksort3_desc(arr, 0, size-1, ascending, count);
+      }
+    }
+    else{
+      return 0;
+    }
+}
+
+
+int main()
+{
+  srandom(time(0));
+  int* arr1 = new int[4];
+  arr1[0] = -12;
+  arr1[1] = -1;
+  arr1[2] = 6;
+  arr1[3] = 13;
+
+  int* arr2 = new int[6];
+  arr2[0] = 17;
+  arr2[1] = 2;
+  arr2[2] = -15;
+  arr2[3] = -17;
+  arr2[4] = 5;
+  arr2[5] = -7;
+
+  int* arr3 = new int[8];
+  arr3[0] = 1;
+  arr3[1] = -11;
+  arr3[2] = -6;
+  arr3[3] = -10;
+  arr3[4] = -11;
+  arr3[5] = 1;
+  arr3[6] = -6;
+  arr3[7] = -16;
+
+  int* arr4 = new int[9];
+  arr4[0] = -6;
+  arr4[1] = 3;
+  arr4[2] = -6;
+  arr4[3] = -6;
+  arr4[4] = -6;
+  arr4[5] = -6;
+  arr4[6] = 3;
+  arr4[7] = 0;
+  arr4[8] = 3;
+
+  int* arr5 = new int[11];
+  arr5[0] = 0;
+  arr5[1] = 8;
+  arr5[2] = 8;
+  arr5[3] = -4;
+  arr5[4] = 8;
+  arr5[5] = -4;
+  arr5[6] = 8;
+  arr5[7] = -4;
+  arr5[8] = -4;
+  arr5[9] = -4;
+  arr5[10] = -4;
+
+  int* arr6 = new int[15];
+  arr6[0] = 4;
+  arr6[1] = 3;
+  arr6[2] = 4;
+  arr6[3] = 4;
+  arr6[4] = 4;
+  arr6[5] = 0;
+  arr6[6] = 4;
+  arr6[7] = 3;
+  arr6[8] = 4;
+  arr6[9] = 3;
+  arr6[10] = 3;
+  arr6[11] = 3;
+  arr6[12] = 4;
+  arr6[13] = 0;
+  arr6[14] = 4;
+
+  int* arr7 = new int[28];
+  arr7[0] = -3;
+  arr7[1] = 1;
+  arr7[2] = -11;
+  arr7[3] = 1;
+  arr7[4] = 3;
+  arr7[5] = 0;
+  arr7[6] = -12;
+  arr7[7] = -3;
+  arr7[8] = 4;
+  arr7[9] = -12;
+  arr7[10] = -3;
+  arr7[11] = -7;
+  arr7[12] = 5;
+  arr7[13] = 0;
+  arr7[14] = 5;
+  arr7[15] = -6;
+  arr7[16] = 6;
+  arr7[17] = 4;
+  arr7[18] = -4;
+  arr7[19] = 4;
+  arr7[20] = -11;
+  arr7[21] = 0;
+  arr7[22] = -12;
+  arr7[23] = -8;
+  arr7[24] = -3;
+  arr7[25] = -8;
+  arr7[26] = -1;
+  arr7[27] = -2;
+
+  int* arr8 = new int[4];
+  arr8[0] = 2;
+  arr8[1] = 2;
+  arr8[2] = 2;
+  arr8[3] = 2;
+
+
+
+
+  int* arr9 = new int[1];
+  arr9[0] = 1;
+  //cout <<"count:" << endl << QuickSort(arr1, 4, true) << endl;
+  //cout << QuickSort(arr2, 6, true) << endl;
+  //cout << QuickSort(arr3, 8, false) << endl;
+
+  //cout << QuickSort3(arr4, 9, true) << endl;
+  //cout << QuickSort3(arr5, 11, true) << endl;
+  cout << QuickSort3(arr9, 1, true) << endl;
+  cout << "elements:" << endl;
+  for(int i=0; i<1; i++){
+    cout << arr8[i] << endl;
+  }
+  /*delete [] arr1;
+  delete [] arr2;
+  delete [] arr3;
+  delete [] arr4;
+  delete [] arr5;
+  delete [] arr6;
+*/
+   return 0;
+}
