@@ -1,0 +1,211 @@
+#include<iostream>
+#include<cmath>
+
+using namespace std;
+
+// do not add extra libraries here
+
+
+/*
+    arr       : array to be sorted, in order to get points this array should contain be in sorted state before returning
+    size      : size of arr
+    ascending : true for ascending, false for descending
+
+    you can use ceil function from cmath
+
+*/
+long getMax(long array[], int n) {
+  long max = array[0];
+  for (int i = 1; i < n; i++)
+    if (array[i] > max)
+      max = array[i];
+  return max;
+}
+
+/*int countingSort_asc(long arr[], int n, int l, int &c){
+  long k = getMax(arr,n);
+  long count[k] = {0};
+  long arr2[n];
+
+  for(int j = 0; j<n; j++){
+    count[arr[j]] = count[arr[j]] + 1;
+    c++;
+  }
+  for(int i = 1; i<=k; i++){
+    count[i] = count[i] + count[i-1];
+    c++;
+  }
+  for(int x = n-1; x>=0; x--){
+    arr2[count[arr[x]]] = arr[x];
+    count[arr[x]] = count[arr[x]] - 1;
+    c++;
+  }
+  for(int y = 0; y<n; y++){
+    arr[y] = arr2[y];
+    c++;
+  }
+
+}
+
+int RadixSort(long arr[], bool ascending, int n, int l ){
+  int c = 0;
+  if(ascending == true){
+    countingSort_asc(arr, n, l , c);
+    return c;
+  }
+}
+*/
+void countingSort_asc(long array[], int size, int l, int place, int &c) {
+  int exp = pow(10,l);
+  int max = exp;
+  int output[size];
+  int count[max] = {0};
+
+  // Calculate count of elements
+  for (int i = 0; i < size; i++){
+    count[(array[i] / place) % exp]++;
+    c++;
+  }
+
+
+  // Calculate cummulative count
+  for (int i = 1; i < max; i++){
+    count[i] += count[i - 1];
+    c++;
+  }
+
+  // Place the elements in sorted order
+  for (int i = size - 1; i >= 0; i--) {
+    output[count[(array[i] / place) % exp] - 1] = array[i];
+    count[(array[i] / place) % exp]--;
+    c++;
+  }
+
+  for (int i = 0; i < size; i++){
+    array[i] = output[i];
+    c++;
+  }
+}
+
+void countingSort_desc(long array[], int size, int l, int place, int &c) {
+  int exp = pow(10,l);
+  int max = exp;
+  int output[size];
+  int count[max] = {0};
+
+  // Calculate count of elements
+  for (int i = 0; i < size; i++){
+    count[(array[i] / place) % exp]++;
+    c++;
+  }
+
+
+  // Calculate cummulative count
+  for (int i = max-1; i >= 1; i--){
+    count[i - 1] += count[i];
+    c++;
+  }
+
+  // Place the elements in sorted order
+  for (int i = size -1; i >= 0; i--) {
+    output[count[(array[i] / place) % exp] - 1] = array[i];
+    count[(array[i] / place) % exp]--;
+    c++;
+  }
+
+  for (int i = 0; i < size ; i++){
+    array[i] = output[i];
+    c++;
+  }
+}
+
+// Main function to implement radix sort
+int RadixSort(long arr[], bool ascending, int n, int l ){
+  // Get maximum element
+  //int max = getMax(arr, n);
+  int c = 0;
+  // Apply counting sort to sort elements based on place value.
+  if(ascending == true){
+    for (int place = 1, i=0 ; i<12/l; place *= pow(10,l), i++){
+      countingSort_asc(arr, n, l, place, c);
+    }
+    return c;
+  }
+  else{
+    for (int place = 1, i=0 ; i<12/l; place *= pow(10,l), i++){
+      countingSort_desc(arr, n, l, place, c);
+    }
+    return c;
+  }
+
+}
+
+
+
+
+
+
+int main()
+{
+  srandom(time(0));
+  long* arr1 = new long[5];
+  arr1[0] = 454;
+  arr1[1] = 435;
+  arr1[2] = 8;
+  arr1[3] = 23;
+  arr1[4] = 68;
+
+  long* arr2 = new long[5];
+  arr2[0] = 454;
+  arr2[1] = 435;
+  arr2[2] = 8;
+  arr2[3] = 23;
+  arr2[4] = 68;
+
+
+  long* arr3 = new long[5];
+  arr3[0] = 454;
+  arr3[1] = 435;
+  arr3[2] = 8;
+  arr3[3] = 23;
+  arr3[4] = 68;
+
+  long* arr4 = new long[5];
+  arr4[0] = 551989238;
+  arr4[1] = 396808766;
+  arr4[2] = 113775846;
+  arr4[3] = 186707985;
+  arr4[4] = 444194547;
+
+
+  long* arr5 = new long[5];
+  arr5[0] = 551989238;
+  arr5[1] = 396808766;
+  arr5[2] = 113775846;
+  arr5[3] = 186707985;
+  arr5[4] = 444194547;
+
+  long* arr6 = new long[1];
+  arr6[0] = 1;
+
+ //cout << RadixSort(arr6,true,1,1) << endl;
+  cout <<"count:" << endl << RadixSort(arr1, true, 5, 3) << endl;
+  //cout << RadixSort(arr2, true, 5, 2) << endl;
+  //cout << RadixSort(arr3, false, 5, 4) << endl;
+
+  //cout << RadixSort(arr4, true, 5, 4) << endl;
+  //cout << RadixSort(arr5, false, 5, 6) << endl;
+
+  cout << "elements:" << endl;
+  for(int i=0; i<1; i++){
+    cout << arr1[i] << endl;
+  }
+  /*delete [] arr1;
+  delete [] arr2;
+  delete [] arr3;
+  delete [] arr4;
+  delete [] arr5;
+  delete [] arr6;
+*/
+   return 0;
+}
