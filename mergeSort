@@ -1,0 +1,273 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+// Merges two subarrays of arr[].
+// First subarray is arr[l..m]
+// Second subarray is arr[m+1..r]
+int count = 0;
+void merge_des(int arr[], int l, int m, int r, int count)
+{
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    // Create temp arrays
+    int L[n1], R[n2];
+
+    // Copy data to temp arrays L[] and R[]
+    for(int i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for(int j = 0; j < n2; j++)
+        R[j] = arr[m + 1 + j];
+
+    // Merge the temp arrays back into arr[l..r]
+
+    // Initial index of first subarray
+    int i = 0;
+
+    // Initial index of second subarray
+    int j = 0;
+
+    // Initial index of merged subarray
+    int k = l;
+
+    while (i < n1 && j < n2)
+    {
+        if (L[i] >= R[j])
+        {
+            arr[k] = L[i];
+            i++;
+
+        }
+        else
+        {
+            arr[k] = R[j];
+            j++;
+
+        }
+        k++;
+        count++;
+    }
+
+    // Copy the remaining elements of
+    // L[], if there are any
+    while (i < n1)
+    {
+        arr[k] = L[i];
+        i++;
+        k++;
+
+    }
+
+    // Copy the remaining elements of
+    // R[], if there are any
+    while (j < n2)
+    {
+        arr[k] = R[j];
+        j++;
+        k++;
+
+    }
+}
+void merge_asc(int arr[], int l, int m, int r, int count)
+{
+    int n1 = m - l + 1;
+    int n2 = r - m;
+
+    // Create temp arrays
+    int L[n1], R[n2];
+
+    // Copy data to temp arrays L[] and R[]
+    for(int i = 0; i < n1; i++)
+        L[i] = arr[l + i];
+    for(int j = 0; j < n2; j++)
+        R[j] = arr[m + 1 + j];
+
+    // Merge the temp arrays back into arr[l..r]
+
+    // Initial index of first subarray
+    int i = 0;
+
+    // Initial index of second subarray
+    int j = 0;
+
+    // Initial index of merged subarray
+    int k = l;
+
+    while (i < n1 && j < n2)
+    {
+        if (L[i] <= R[j])
+        {
+            arr[k] = L[i];
+            i++;
+
+        }
+        else
+        {
+            arr[k] = R[j];
+            j++;
+
+        }
+        k++;
+        count++;
+    }
+
+    // Copy the remaining elements of
+    // L[], if there are any
+    while (i < n1)
+    {
+        arr[k] = L[i];
+        i++;
+        k++;
+
+    }
+
+    // Copy the remaining elements of
+    // R[], if there are any
+    while (j < n2)
+    {
+        arr[k] = R[j];
+        j++;
+        k++;
+
+    }
+}
+
+// l is for left index and r is
+// right index of the sub-array
+// of arr to be sorted */
+int mergeSort(int arr[], int l, int r, bool ascending,int i)
+{
+    if (l < r)
+    {
+
+        // Same as (l+r)/2, but avoids
+        // overflow for large l and h
+        int m = ceil((l + r ) / 2);
+
+        // Sort first and second halves
+        mergeSort(arr, l, m, ascending, i);
+        mergeSort(arr, m + 1, r, ascending, i);
+        if(ascending == true){
+          merge_asc(arr, l, m, r, i);
+        }
+        else{
+          merge_des(arr, l, m, r,i);
+        }
+    }
+    return i;
+}
+int MergeSort (int*& arr, int size, bool ascending)
+{
+    int l=0;
+    int r = size-1;
+    int i = 0;
+    return mergeSort(arr, l, r,ascending, i);
+
+}
+
+int funkySort(int* arr, int l, int r, bool ascending){
+  int size = r-l+1;
+
+  if(size == 0 || size == 1){
+      return 0;
+  }
+  if(size == 2){
+
+    if(ascending == true){
+      if(arr[l]> arr[r]){
+        int temp = arr[l];
+        arr[l] = arr[r];
+        arr[r] = temp;
+        return 1;
+      }
+    }
+    else{
+      if(arr[l] <= arr[r]){
+        int temp = arr[l];
+        arr[l] = arr[r];
+        arr[r] = temp;
+        return 1;
+      }
+    }
+
+  }
+  if(size >= 3){
+    if(ascending == true){
+      if(arr[l]> arr[r]){
+        int temp = arr[l];
+        arr[l] = arr[r];
+        arr[r] = temp;
+      }
+    }
+    else{
+      if(arr[l] < arr[r]){
+        int temp = arr[l];
+        arr[l] = arr[r];
+        arr[r] = temp;
+      }
+    }
+    int initial_two_third = ceil(size*2/3.0);
+
+    return funkySort(arr, l, l+initial_two_third -1, ascending) + funkySort(arr, r-initial_two_third+1, r, ascending) + funkySort(arr,  l, l+initial_two_third-1, ascending) + 1;
+  }
+
+}
+
+int FunkySort (int*& arr, int size, bool ascending)
+{
+  int l=0;
+  int r = size-1;
+
+  return funkySort(arr, l,r, ascending);
+}
+
+
+int main()
+{
+  srandom(time(0));
+  int* arr1 = new int[4];
+  arr1[0] = 3;
+  arr1[1] = 2;
+  arr1[2] = 7;
+  arr1[3] = 10;
+
+  int* arr2 = new int[6];
+  arr2[0] = -11;
+  arr2[1] = 2;
+  arr2[2] = 6;
+  arr2[3] = 7;
+  arr2[4] = -1;
+  arr2[5] = 5;
+
+  int* arr3 = new int[11];
+  arr3[0] = 7;
+  arr3[1] = 1;
+  arr3[2] = -2;
+  arr3[3] = 5;
+  arr3[4] = 17;
+  arr3[5] = 8;
+  arr3[6] = -5;
+  arr3[7] = 3;
+  arr3[8] = 2;
+  arr3[9] = -3;
+  arr3[10] = 0;
+
+  int*arr4 = new int[2];
+  arr4[0] = 2;
+  arr4[1] = 1;
+
+  cout <<"count:" << endl << FunkySort(arr1, 4, false) << endl;
+  //cout << FunkySort(arr2, 6, true) << endl;
+  //cout << FunkySort(arr3, 11, true) << endl;
+  //cout << MergeSort(arr4, 2, true) << endl;
+  cout << "elements:" << endl;
+  for(int i=0; i<4; i++){
+    cout << arr1[i] << endl;
+  }
+  delete [] arr1;
+  delete [] arr2;
+  delete [] arr3;
+
+  return 0;
+}
