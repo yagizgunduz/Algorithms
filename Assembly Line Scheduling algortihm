@@ -1,0 +1,220 @@
+#define DEBUG 
+#define DEBUG_STDERR(x) do { std::cerr << (x) << endl; } while(0)
+#define DEBUG_ARRAY(a, n) do { for (int i = 0; i < n; i++) std::cerr << a[i] << " "; std::cerr << endl; } while(0)
+
+// for example usage of DEBUG macros check test.cpp
+
+/*a1[i] :the time for line 1 station i to complete its task
+a2[i] :the time for line 2 station i to complete its task
+n      : number of stations in each assembly line 
+t1[i]  : cost of changing from line 1 station i-1 to line 2 station i 
+t2[i]  : cost of changing from line 2 station i-1 to line 1 station i 
+e1,e2    : cost of entry for assembly line 1,2 respectively, each > 0
+x1,x2    : cost of exit for assembly line 1,2 respectively, each > 0 */
+
+
+int min(int x, int y){
+  if (x <= y){
+    return x;
+  }
+  else{
+    return y;
+  }
+}
+
+std::pair<int,int> Rec1(int i,int j, int*& a1, int*& a2, int*& t1, int*& t2, int e1, int e2, int x1, int x2, int &count){
+
+    if(j == 0){
+        std::pair<int,int> lowest;
+        if(i == 1){
+            lowest.first = e1+ a1[0];
+            lowest.second = count+ 1;
+        }
+        else{
+            lowest.first = e2 + a2[0];
+            lowest.second = count+1;
+        }
+        return lowest;
+
+    }
+
+
+    if(i == 1){
+        std::pair<int,int> res;
+        std::pair<int,int> my;
+        my = Rec1(i, j-1, a1, a2 , t1, t2, e1, e2, x1, x2, count);
+        std::pair<int,int> my2;
+
+        my2 = Rec1(3-i, j-1, a1,a2 ,t1, t2, e1, e2, x1, x2, my.second);
+        if(my.first + a1[j] <= my2.first + t2[j-1] + a1[j]){
+          res.first = my.first+ a1[j];
+
+        }
+        else{
+          res.first = my2.first+ t2[j-1] + a1[j];
+        }
+        res.second = my2.second + 1;
+        return res;
+    }
+    else{
+      std::pair<int,int> res;
+      std::pair<int,int> my;
+      my = Rec1(i, j-1, a1, a2 , t1, t2, e1, e2, x1, x2, count);
+      std::pair<int,int> my2;
+      my2 = Rec1(3-i, j-1, a1,a2 ,t1, t2, e1, e2, x1, x2, my.second);
+
+      if(my.first + a2[j] <= my2.first + t1[j-1] + a2[j]){
+        res.first = my.first+ a2[j];
+      }
+      else{
+        res.first = my2.first+ t1[j-1] + a2[j];
+      }
+      res.second = my2.second + 1;
+      return res;
+    }
+}
+
+std::pair<int,int> Assembly_Rec (int*& a1, int*& a2, int n, int*& t1, int*& t2, int e1, int e2, int x1, int x2)
+{
+    // how to make pair
+    std::pair<int,int> retVal;
+    int count = 0;
+    int result = 0;
+    std::pair<int,int> val1 = Rec1(1, n-1, a1, a2, t1, t2, e1, e2, x1, x2, count);
+    std::pair<int,int> val2 = Rec1(2, n-1, a1, a2, t1, t2, e1, e2, x1, x2, val1.second);
+
+    result = min(val1.first + x1, val2.first + x2);
+    retVal.first = result;
+    retVal.second = val2.second;
+    return retVal;
+}
+
+std::pair<int,int> Rec2(int i,int j, int*& a1, int*& a2, int*& t1, int*& t2, int e1, int e2, int x1, int x2, int &count,int* temp1, int* temp2){
+  if(j == 0){
+    std::pair<int,int> lowest;
+    if(i == 1){
+      temp1[j] = e1 + a1[j];
+      lowest.first = e1 + a1[j];
+      lowest.second = count + 1;
+    }
+    else{
+      temp1[j] = e2 + a2[j];
+      lowest.first = e2 + a2[j];
+      lowest.second = count + 1;
+    }
+    return lowest;
+  }
+  if(i == 1){
+    std::pair<int,int> res;
+    std::pair<int,int> my;
+    std::pair<int,int> my2;
+    if(temp1[j] != -1){
+      my.first = temp1[j];
+      my.second = count +1;
+      res.first = my.first;
+      res.second = my.second;
+      return res;
+    }
+    else{
+      my = Rec2(i, j-1, a1, a2, t1, t2, e1, e2, x1, x2, count, temp1, temp2);
+      my2 = Rec2(3-i, j-1, a1, a2, t1, t2, e1, e2, x1, x2, my.second, temp1, temp2);
+      temp1[j] = min(my.first + a1[j], my2.first + a1[j] + t2[j-1]);
+      res.first = temp1[j];
+      res.second = my2.second +1;
+      return res;
+    }
+  }
+  else{
+    std::pair<int,int> res;
+    std::pair<int,int> my;
+    std::pair<int,int> my2;
+    if(temp2[j] != -1){
+      my.first = temp2[j];
+      my.second = count +1;
+      res.first = my.first;
+      res.second = my.second;
+      return res;
+    }
+    else{
+      my = Rec2(i, j-1, a1, a2, t1, t2, e1, e2, x1, x2, count, temp1, temp2);
+      my2 = Rec2(3-i, j-1, a1, a2, t1, t2, e1, e2, x1, x2, my.second, temp1, temp2);
+      temp2[j] = min(my.first + a2[j], my2.first + a2[j] + t1[j-1]);
+      res.first = temp2[j];
+      res.second = my2.second +1;
+      return res;
+    }
+  }
+
+
+
+}
+std::pair<int,int> Assembly_Memo (int*& a1, int*& a2, int n, int*& t1, int*& t2, int e1, int e2, int x1, int x2)
+{
+
+    std::pair<int,int> retVal;
+    int result = 0;
+    int count = 0;
+    int* temp1 = new int[n];
+    int* temp2 = new int[n];
+    for(int i = 0 ; i<n; i++){
+      temp1[i] = -1;
+      temp2[i] = -1;
+    }
+
+    std::pair<int,int> val1 = Rec2(1,n-1,a1, a2, t1, t2, e1, e2, x1, x2, count,temp1,temp2);
+    std::pair<int,int> val2 = Rec2(2,n-1,a1, a2, t1, t2, e1, e2, x1, x2, val1.second,temp1,temp2);
+    result = min(val1.first + x1, val2.first + x2);
+    retVal.first = result;
+    retVal.second = val2.second;
+    return retVal;
+
+}
+
+std::pair<int,int> Assembly_Tab (int*& a1, int*& a2, int n, int*& t1, int*& t2, int e1, int e2, int x1, int x2)
+{
+
+    std::pair<int,int> retVal;
+
+    int array1[n];
+    int array2[n];
+
+    int resultf;
+
+    int count = 0;
+    array1[0] = e1 + a1[0];
+    array2[0] = e2 + a2[0];
+    for(int j = 1; j<n ; j++){
+        if(array1[j-1] + a1[j] <= array2[j-1] + t2[j-1] + a1[j]){
+            array1[j] = array1[j-1] + a1[j];
+
+        }
+        else{
+            array1[j] = array2[j-1] + t2[j-1] + a1[j];
+
+        }
+        if(array2[j-1] + a2[j] <= array1[j-1] + t1[j-1] + a2[j]){
+            array2[j] = array2[j-1] + a2[j];
+
+        }
+        else{
+            array2[j] = array1[j-1] + t1[j-1] + a2[j];
+
+        }
+        count++;
+    }
+    if(array1[n-1] + x1 <= array2[n-1] + x2){
+        resultf = array1[n-1] + x1;
+
+        count++;
+    }
+    else{
+        resultf = array2[n-1] + x2;
+
+        count++;
+    }
+
+    retVal.first = resultf;
+    retVal.second = count;
+    return retVal;
+
+}
