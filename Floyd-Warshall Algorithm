@@ -1,0 +1,55 @@
+//2 Source 2 Destination Problem
+void Floyd_warshall (int** &graph, int V, int **dist)
+{
+
+    int i, j, k;
+
+    for (i = 0; i < V; i++)
+        for (j = 0; j < V; j++)
+            dist[i][j] = graph[i][j];
+
+
+    for (k = 0; k < V; k++)
+    {
+
+        for (i = 0; i < V; i++)
+        {
+
+            for (j = 0; j < V; j++)
+            {
+
+                if (dist[i][k] + dist[k][j] < dist[i][j])
+                    dist[i][j] = dist[i][k] + dist[k][j];
+            }
+        }
+    }
+
+}
+
+
+int minCost(int**& graph, int V, int s1, int s2, int d1, int d2, int A, int B){
+    
+    int result = 0;
+    int **dist = new int*[V];
+    for(int i=0; i<V;i++){
+        dist[i] = new int[V];
+    }
+
+    Floyd_warshall(graph,V,dist);
+    //cout << dist[0][1] << endl;
+    int first_distance = dist[s1][d1] * A;
+    int second_distance = dist[s2][d2] * A;
+    
+    
+    result = first_distance + second_distance;
+    for(int i=0;i<V;i++){
+        for(int j=0;j<V;j++){
+            if(((dist[s1][i] * A) + (dist[s2][i] * A) + (dist[j][d1] * A) + (dist[j][d2] * A)  + (dist[i][j] * B)) < result){
+                result = (dist[s1][i] * A) + (dist[s2][i] * A) + (dist[j][d1] * A) + (dist[j][d2] * A)  + (dist[i][j] * B);
+            }
+        }   
+    }
+    
+    return result;
+    
+}
